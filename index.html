@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DRR and SDR Calculator</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(135deg, #74ebd5, #9face6);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.2);
+      max-width: 500px;
+      width: 90%;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+      font-size: 1.8em;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin: 15px 0 5px;
+      color: #444;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1em;
+      transition: border 0.3s ease;
+    }
+
+    input[type="number"]:focus {
+      border-color: #5b8def;
+      outline: none;
+      box-shadow: 0 0 6px rgba(91, 141, 239, 0.5);
+    }
+
+    button {
+      display: block;
+      width: 100%;
+      background: #5b8def;
+      color: white;
+      border: none;
+      padding: 12px;
+      margin-top: 20px;
+      font-size: 1.1em;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #4169e1;
+    }
+
+    .result-box {
+      border: 2px solid #eee;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 10px;
+      background: #f9f9f9;
+      font-size: 1.1em;
+      color: #222;
+    }
+
+    .result-box strong {
+      color: #5b8def;
+    }
+
+    @media (max-width: 500px) {
+      h2 {
+        font-size: 1.5em;
+      }
+      button {
+        font-size: 1em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>DRR and SDR Calculator</h2>
+
+    <form id="calcForm">
+      <label for="drrResolved">DRR Resolved this month:</label>
+      <input type="number" id="drrResolved" min="0" required />
+
+      <label for="sdrResolved">SDR Resolved this month:</label>
+      <input type="number" id="sdrResolved" min="0" required />
+
+      <label for="totalResolvedClosed">Total Incidents Resolved / Closed:</label>
+      <input type="number" id="totalResolvedClosed" min="0" required />
+
+      <button type="button" onclick="calculate()">Calculate</button>
+    </form>
+
+    <div class="result-box" id="resultBox" style="display:none;"></div>
+  </div>
+
+  <script>
+    function calculate() {
+      const drr = parseInt(document.getElementById("drrResolved").value) || 0;
+      const sdr = parseInt(document.getElementById("sdrResolved").value) || 0;
+      const total = parseInt(document.getElementById("totalResolvedClosed").value) || 0;
+
+      if (total <= 0) {
+        alert("Total incidents must be greater than 0.");
+        return;
+      }
+
+      const drrPercent = ((drr / total) * 100).toFixed(2);
+      const sdrPercent = ((sdr / total) * 100).toFixed(2);
+
+      const resultBox = document.getElementById("resultBox");
+      resultBox.style.display = "block";
+      resultBox.innerHTML = `
+        <p><strong>DRR %:</strong> ${drrPercent}%</p>
+        <p><strong>SDR %:</strong> ${sdrPercent}%</p>
+      `;
+    }
+  </script>
+</body>
+</html>
