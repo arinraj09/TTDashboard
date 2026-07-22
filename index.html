@@ -1,342 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DRR and SDR Calculator</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      font-family: "Inter", "Segoe UI", Arial, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      background-attachment: fixed;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      position: relative;
-    }
-    body::before {
-      content: "";
-      position: absolute;
-      width: 500px;
-      height: 500px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 50%;
-      top: -250px;
-      right: -250px;
-      animation: float 8s ease-in-out infinite;
-    }
-    body::after {
-      content: "";
-      position: absolute;
-      width: 300px;
-      height: 300px;
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 50%;
-      bottom: -150px;
-      left: -150px;
-      animation: float 6s ease-in-out infinite reverse;
-    }
-    @keyframes float {
-      0%, 100% { transform: translateY(0px); }
-      50% { transform: translateY(20px); }
-    }
-    .container {
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      padding: 40px;
-      border-radius: 24px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      max-width: 520px;
-      width: 100%;
-      position: relative;
-      z-index: 1;
-      animation: slideIn 0.5s ease-out;
-    }
-    @keyframes slideIn {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 30px;
-      color: #1a202c;
-      font-size: 2em;
-      font-weight: 700;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .form-group {
-      margin-bottom: 24px;
-      position: relative;
-    }
-    label {
-      display: block;
-      font-weight: 600;
-      margin-bottom: 8px;
-      color: #2d3748;
-      font-size: 0.95em;
-      transition: color 0.3s ease;
-    }
-    input[type="number"] {
-      width: 100%;
-      padding: 14px 16px;
-      border: 2px solid #e2e8f0;
-      border-radius: 12px;
-      font-size: 1em;
-      transition: all 0.3s ease;
-      background: #f7fafc;
-      color: #1a202c;
-    }
-    input[type="number"]:hover {
-      border-color: #cbd5e0;
-      background: #fff;
-    }
-    input[type="number"]:focus {
-      border-color: #667eea;
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-      background: #fff;
-    }
-    button {
-      width: 100%;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      padding: 16px;
-      margin-top: 10px;
-      font-size: 1.1em;
-      font-weight: 600;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-      position: relative;
-      overflow: hidden;
-    }
-    button::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-      transition: left 0.5s ease;
-    }
-    button:hover::before {
-      left: 100%;
-    }
-    button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
-    }
-    button:active {
-      transform: translateY(0);
-    }
-    .result-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(4px);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-      animation: overlayFadeIn 0.3s ease-out;
-    }
-    .result-overlay.show {
-      display: flex;
-    }
-    @keyframes overlayFadeIn {
-      from {
-        opacity: 0;
-      }
-      to {
-        opacity: 1;
-      }
-    }
-    .result-box {
-      border: none;
-      padding: 32px;
-      border-radius: 20px;
-      background: white;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-      max-width: 450px;
-      width: 90%;
-      position: relative;
-      animation: popupSlideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    @keyframes popupSlideIn {
-      from {
-        opacity: 0;
-        transform: scale(0.7) translateY(-30px);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-      }
-    }
-    .close-btn {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      width: 32px;
-      height: 32px;
-      border: none;
-      background: #f7fafc;
-      border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s ease;
-      padding: 0;
-      color: #4a5568;
-      font-size: 20px;
-      line-height: 1;
-    }
-    .close-btn:hover {
-      background: #e2e8f0;
-      color: #1a202c;
-      transform: rotate(90deg);
-    }
-    .result-header {
-      margin-bottom: 24px;
-      padding-bottom: 16px;
-      border-bottom: 2px solid #edf2f7;
-    }
-    .result-title {
-      font-size: 1.5em;
-      font-weight: 700;
-      color: #1a202c;
-      text-align: center;
-    }
-    .result-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px;
-      margin-bottom: 12px;
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-      transition: transform 0.2s ease;
-    }
-    .result-item:hover {
-      transform: translateX(4px);
-    }
-    .result-item:last-child {
-      margin-bottom: 0;
-    }
-    .result-label {
-      font-weight: 600;
-      color: #2d3748;
-      font-size: 1.05em;
-    }
-    .result-value {
-      font-size: 1.4em;
-      font-weight: 700;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    @media (max-width: 500px) {
-      .container {
-        padding: 30px 20px;
-      }
-      h2 {
-        font-size: 1.6em;
-      }
-      button {
-        font-size: 1em;
-        padding: 14px;
-      }
-      .result-value {
-        font-size: 1.2em;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DRR & SDR Calculator</title>
+<style>
+  :root {
+    --accent: #4f6ef7;
+    --border: #e3e6ee;
+    --text: #1c2333;
+    --muted: #6b7280;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    background: #fff;
+    color: var(--text);
+    padding: 16px;
+  }
+
+  .card {
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  h1 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+
+  .field { margin-bottom: 14px; }
+
+  label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 5px;
+  }
+
+  input[type="number"] {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 1rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: #fafbfc;
+    color: var(--text);
+  }
+
+  input[type="number"]:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: #fff;
+  }
+
+  button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 4px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  button:hover { background: #3d5ce5; }
+
+  #error {
+    display: none;
+    margin-top: 12px;
+    padding: 10px 12px;
+    font-size: 0.85rem;
+    color: #b91c1c;
+    background: #fef2f2;
+    border-radius: 8px;
+  }
+
+  #results {
+    display: none;
+    margin-top: 18px;
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+  }
+
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 8px;
+  }
+
+  .row + .row { margin-top: 8px; }
+  .row.drr { background: #eef2ff; }
+  .row.sdr { background: #ecfdf5; }
+
+  .row .name { font-size: 0.9rem; font-weight: 600; }
+  .row .val  { font-size: 1.15rem; font-weight: 700; }
+  .drr .val  { color: #4338ca; }
+  .sdr .val  { color: #047857; }
+
+  @media (max-width: 380px) {
+    body { padding: 10px; }
+    h1 { font-size: 1.1rem; }
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h2>DRR & SDR Calculator</h2>
+  <div class="card">
+    <h1>DRR &amp; SDR Calculator</h1>
+
     <form id="calcForm">
-      <div class="form-group">
-        <label for="drrResolved">DRR Resolved:</label>
-        <input type="number" id="drrResolved" min="0" required />
+      <div class="field">
+        <label for="drrResolved">DRR Resolved</label>
+        <input type="number" id="drrResolved" min="0" inputmode="numeric" required>
       </div>
-      <div class="form-group">
-        <label for="sdrResolved">SDR Resolved:</label>
-        <input type="number" id="sdrResolved" min="0" required />
+      <div class="field">
+        <label for="sdrResolved">SDR Resolved</label>
+        <input type="number" id="sdrResolved" min="0" inputmode="numeric" required>
       </div>
-      <div class="form-group">
-        <label for="totalResolvedClosed">Total Incidents Resolved / Closed:</label>
-        <input type="number" id="totalResolvedClosed" min="0" required />
+      <div class="field">
+        <label for="totalResolved">Total Incidents Resolved / Closed</label>
+        <input type="number" id="totalResolved" min="1" inputmode="numeric" required>
       </div>
-      <button type="button" onclick="calculate()">Calculate Results</button>
+      <button type="submit">Calculate</button>
     </form>
-  </div>
-  
-  <div class="result-overlay" id="resultOverlay" onclick="closePopup(event)">
-    <div class="result-box" id="resultBox" onclick="event.stopPropagation()">
-      <button class="close-btn" onclick="closePopup()" title="Close">×</button>
-      <div class="result-header">
-        <div class="result-title">Calculation Results</div>
+
+    <div id="error">Total incidents must be greater than 0.</div>
+
+    <div id="results">
+      <div class="row drr">
+        <span class="name">DRR %</span>
+        <span class="val" id="drrOut">–</span>
       </div>
-      <div id="resultContent"></div>
+      <div class="row sdr">
+        <span class="name">SDR %</span>
+        <span class="val" id="sdrOut">–</span>
+      </div>
     </div>
   </div>
-  <script>
-    function calculate() {
-      const drr = parseInt(document.getElementById("drrResolved").value) || 0;
-      const sdr = parseInt(document.getElementById("sdrResolved").value) || 0;
-      const total = parseInt(document.getElementById("totalResolvedClosed").value) || 0;
-      if (total <= 0) {
-        alert("Total incidents must be greater than 0.");
-        return;
-      }
-      const drrPercent = ((drr / total) * 100).toFixed(2);
-      const sdrPercent = ((sdr / total) * 100).toFixed(2);
-      
-      const resultContent = document.getElementById("resultContent");
-      resultContent.innerHTML = `
-        <div class="result-item">
-          <span class="result-label">DRR Percentage</span>
-          <span class="result-value">${drrPercent}%</span>
-        </div>
-        <div class="result-item">
-          <span class="result-label">SDR Percentage</span>
-          <span class="result-value">${sdrPercent}%</span>
-        </div>
-      `;
-      
-      document.getElementById("resultOverlay").classList.add("show");
+
+<script>
+  document.getElementById("calcForm").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var drr   = parseFloat(document.getElementById("drrResolved").value)  || 0;
+    var sdr   = parseFloat(document.getElementById("sdrResolved").value)  || 0;
+    var total = parseFloat(document.getElementById("totalResolved").value) || 0;
+
+    var errEl = document.getElementById("error");
+    var resEl = document.getElementById("results");
+
+    if (total <= 0) {
+      errEl.style.display = "block";
+      resEl.style.display = "none";
+      return;
     }
-    
-    function closePopup(event) {
-      if (!event || event.target === document.getElementById("resultOverlay")) {
-        document.getElementById("resultOverlay").classList.remove("show");
-      }
-    }
-  </script>
+
+    errEl.style.display = "none";
+    document.getElementById("drrOut").textContent = ((drr / total) * 100).toFixed(2) + "%";
+    document.getElementById("sdrOut").textContent = ((sdr / total) * 100).toFixed(2) + "%";
+    resEl.style.display = "block";
+  });
+</script>
 </body>
 </html>
