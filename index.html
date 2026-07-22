@@ -5,168 +5,460 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DRR & SDR Calculator</title>
 <style>
-  :root {
-    --accent: #4f6ef7;
-    --border: #e3e6ee;
-    --text: #1c2333;
-    --muted: #6b7280;
-  }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
+  html, body { height: 100%; }
   body {
     font-family: system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
-    background: #fff;
-    color: var(--text);
-    padding: 16px;
+    color: #123332;
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: clamp(12px, 3vw, 40px);
+    background:
+      radial-gradient(circle at 15% 20%, rgba(20, 184, 166, 0.30), transparent 45%),
+      radial-gradient(circle at 85% 15%, rgba(16, 185, 129, 0.25), transparent 40%),
+      radial-gradient(circle at 80% 85%, rgba(6, 148, 162, 0.28), transparent 45%),
+      radial-gradient(circle at 20% 90%, rgba(45, 212, 191, 0.22), transparent 40%),
+      linear-gradient(160deg, #eafaf7 0%, #e2f4f1 100%);
+    background-attachment: fixed;
+    position: relative;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image: radial-gradient(rgba(13, 148, 136, 0.13) 1px, transparent 1px);
+    background-size: 26px 26px;
+    pointer-events: none;
+  }
+  body::after {
+    content: "";
+    position: fixed;
+    width: 60vmin;
+    height: 60vmin;
+    border: 2px solid rgba(13, 148, 136, 0.15);
+    border-radius: 50%;
+    top: -20vmin;
+    right: -20vmin;
+    box-shadow: 0 0 0 60px rgba(13, 148, 136, 0.05),
+                0 0 0 130px rgba(13, 148, 136, 0.04);
+    pointer-events: none;
   }
 
   .card {
-    max-width: 480px;
-    margin: 0 auto;
+    width: min(92vw, 560px);
+    background: rgba(255, 255, 255, 0.90);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+    border-radius: clamp(16px, 2.5vw, 28px);
+    padding: clamp(24px, 5vw, 48px);
+    box-shadow: 0 24px 70px rgba(13, 108, 100, 0.22);
+    position: relative;
+    z-index: 1;
   }
-
   h1 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    margin-bottom: 20px;
+    font-size: clamp(1.5rem, 4.5vw, 2.2rem);
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: clamp(20px, 4vw, 36px);
+    background: linear-gradient(120deg, #0d9488, #059669);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: #0d9488;
   }
-
-  .field { margin-bottom: 14px; }
-
+  .field { margin-bottom: clamp(16px, 3vw, 24px); }
   label {
     display: block;
-    font-size: 0.85rem;
+    font-size: clamp(0.9rem, 2vw, 1.05rem);
     font-weight: 600;
-    color: var(--muted);
-    margin-bottom: 5px;
+    color: #2c4a47;
+    margin-bottom: 8px;
   }
-
   input[type="number"] {
     width: 100%;
-    padding: 10px 12px;
-    font-size: 1rem;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: #fafbfc;
-    color: var(--text);
+    padding: clamp(12px, 2.5vw, 18px) clamp(14px, 2.5vw, 20px);
+    font-size: clamp(1rem, 2.2vw, 1.2rem);
+    font-weight: 600;
+    border: 2px solid #d5e8e4;
+    border-radius: 14px;
+    background: #f5fbfa;
+    color: #123332;
+    transition: border-color 0.15s, box-shadow 0.15s;
   }
-
   input[type="number"]:focus {
     outline: none;
-    border-color: var(--accent);
+    border-color: #14b8a6;
     background: #fff;
+    box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.15);
   }
-
-  button {
+  button.calc {
     width: 100%;
-    padding: 12px;
-    margin-top: 4px;
-    font-size: 1rem;
-    font-weight: 600;
+    padding: clamp(14px, 2.8vw, 20px);
+    margin-top: 6px;
+    font-size: clamp(1.05rem, 2.4vw, 1.25rem);
+    font-weight: 700;
+    letter-spacing: 0.02em;
     color: #fff;
-    background: var(--accent);
+    background: linear-gradient(120deg, #0d9488, #059669);
     border: none;
-    border-radius: 8px;
+    border-radius: 14px;
     cursor: pointer;
+    box-shadow: 0 6px 20px rgba(13, 148, 136, 0.30);
+    transition: filter 0.2s;
   }
-
-  button:hover { background: #3d5ce5; }
+  button.calc:hover { filter: brightness(1.08); }
+  button.calc:active { filter: brightness(0.95); }
 
   #error {
     display: none;
-    margin-top: 12px;
-    padding: 10px 12px;
-    font-size: 0.85rem;
+    margin-top: 16px;
+    padding: 14px 16px;
+    font-size: clamp(0.85rem, 2vw, 1rem);
+    font-weight: 600;
     color: #b91c1c;
     background: #fef2f2;
-    border-radius: 8px;
+    border: 1px solid #fecaca;
+    border-radius: 12px;
   }
 
-  #results {
+  /* ---------- Popup ---------- */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(8, 40, 37, 0.55);
     display: none;
-    margin-top: 18px;
-    border-top: 1px solid var(--border);
-    padding-top: 14px;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 16px;
+  }
+  .overlay.show { display: flex; animation: fade 0.2s ease-out; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+  .popup {
+    background: #fff;
+    width: min(94vw, 500px);
+    max-height: 90vh;
+    max-height: 90dvh;
+    overflow-y: auto;
+    border-radius: 20px;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+    animation: pop 0.25s ease-out;
+  }
+  @keyframes pop {
+    from { opacity: 0; transform: scale(0.92); }
+    to   { opacity: 1; transform: scale(1); }
   }
 
-  .row {
+  .popup-head {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 12px;
-    border-radius: 8px;
+    padding: clamp(16px, 3vw, 22px) clamp(18px, 4vw, 28px);
+    background: linear-gradient(120deg, #0d9488, #059669);
+    border-radius: 20px 20px 0 0;
+    position: sticky;
+    top: 0;
+  }
+  .popup-head h2 {
+    color: #fff;
+    font-size: clamp(1.05rem, 2.6vw, 1.3rem);
+    font-weight: 700;
+  }
+  .close-btn {
+    width: 32px; height: 32px; flex: 0 0 32px;
+    border: none; border-radius: 50%;
+    background: rgba(255,255,255,0.22);
+    color: #fff; font-size: 18px; line-height: 1;
+    cursor: pointer; transition: background 0.15s;
+  }
+  .close-btn:hover { background: rgba(255,255,255,0.38); }
+
+  .popup-body { padding: clamp(18px, 4vw, 28px); }
+
+  /* ---------- Metric card ---------- */
+  .metric {
+    border-radius: 16px;
+    padding: clamp(14px, 3vw, 20px);
+    margin-bottom: 16px;
+  }
+  .metric:last-child { margin-bottom: 0; }
+
+  /* Green variant (threshold met) */
+  .metric.pass {
+    border: 1px solid #bbf0e0;
+    background: #f0fdf8;
+  }
+  .metric.pass .metric-name,
+  .metric.pass .metric-pct { color: #047857; }
+
+  /* Red variant (below threshold) */
+  .metric.fail {
+    border: 1px solid #fecaca;
+    background: #fff5f5;
+  }
+  .metric.fail .metric-name,
+  .metric.fail .metric-pct { color: #b91c1c; }
+
+  .metric-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 10px;
+  }
+  .metric-name {
+    font-size: clamp(0.95rem, 2.2vw, 1.1rem);
+    font-weight: 700;
+  }
+  .metric-pct {
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 800;
   }
 
-  .row + .row { margin-top: 8px; }
-  .row.drr { background: #eef2ff; }
-  .row.sdr { background: #ecfdf5; }
-
-  .row .name { font-size: 0.9rem; font-weight: 600; }
-  .row .val  { font-size: 1.15rem; font-weight: 700; }
-  .drr .val  { color: #4338ca; }
-  .sdr .val  { color: #047857; }
-
-  @media (max-width: 380px) {
-    body { padding: 10px; }
-    h1 { font-size: 1.1rem; }
+  /* Threshold badge */
+  .threshold-badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: 999px;
+    margin-left: 8px;
+    vertical-align: middle;
+    letter-spacing: 0.04em;
   }
+  .pass .threshold-badge {
+    background: #d1fae5;
+    color: #065f46;
+  }
+  .fail .threshold-badge {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+
+  .bar {
+    height: 10px;
+    background: #e5f2ef;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .bar-fill {
+    height: 100%;
+    width: 0;
+    border-radius: 999px;
+    transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  /* Green bar fill */
+  .pass .bar-fill { background: linear-gradient(90deg, #34d399, #059669); }
+  /* Red bar fill */
+  .fail .bar-fill { background: linear-gradient(90deg, #f87171, #dc2626); }
+
+  .formula {
+    background: #f4faf8;
+    border-left: 4px solid #99d6cc;
+    border-radius: 0 10px 10px 0;
+    padding: 10px 14px;
+    font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+    font-size: clamp(0.78rem, 1.9vw, 0.92rem);
+    color: #2c4a47;
+    line-height: 1.7;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .formula b { color: #0f766e; }
+  .fail .formula { border-left-color: #fca5a5; }
+  .fail .formula b { color: #b91c1c; }
+
+  /* ---------- Poetic Summary ---------- */
+  .summary {
+    margin-top: 20px;
+    padding: 18px 20px;
+    border-radius: 14px;
+    text-align: center;
+    font-size: clamp(0.88rem, 2vw, 1rem);
+    line-height: 1.75;
+  }
+  .summary.all-pass {
+    background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+    border: 1px solid #6ee7b7;
+    color: #065f46;
+  }
+  .summary.partial-pass {
+    background: linear-gradient(135deg, #fffbeb, #fef3c7);
+    border: 1px solid #fcd34d;
+    color: #78350f;
+  }
+  .summary.all-fail {
+    background: linear-gradient(135deg, #fff5f5, #fee2e2);
+    border: 1px solid #fca5a5;
+    color: #7f1d1d;
+  }
+  .summary .emoji { font-size: 1.5rem; display: block; margin-bottom: 6px; }
+  .summary strong { font-weight: 800; }
 </style>
 </head>
 <body>
-  <div class="card">
-    <h1>DRR &amp; SDR Calculator</h1>
 
-    <form id="calcForm">
-      <div class="field">
-        <label for="drrResolved">DRR Resolved</label>
-        <input type="number" id="drrResolved" min="0" inputmode="numeric" required>
-      </div>
-      <div class="field">
-        <label for="sdrResolved">SDR Resolved</label>
-        <input type="number" id="sdrResolved" min="0" inputmode="numeric" required>
-      </div>
-      <div class="field">
-        <label for="totalResolved">Total Incidents Resolved / Closed</label>
-        <input type="number" id="totalResolved" min="1" inputmode="numeric" required>
-      </div>
-      <button type="submit">Calculate</button>
-    </form>
+<div class="card">
+  <h1>DRR &amp; SDR Calculator</h1>
+  <form id="calcForm">
+    <div class="field">
+      <label for="drrResolved">DRR Resolved</label>
+      <input type="number" id="drrResolved" min="0" inputmode="numeric" required>
+    </div>
+    <div class="field">
+      <label for="sdrResolved">SDR Resolved</label>
+      <input type="number" id="sdrResolved" min="0" inputmode="numeric" required>
+    </div>
+    <div class="field">
+      <label for="totalResolved">Total Incidents Resolved / Closed</label>
+      <input type="number" id="totalResolved" min="1" inputmode="numeric" required>
+    </div>
+    <button type="submit" class="calc">Calculate</button>
+  </form>
+  <div id="error">Total incidents must be greater than 0.</div>
+</div>
 
-    <div id="error">Total incidents must be greater than 0.</div>
+<!-- Result popup -->
+<div class="overlay" id="overlay">
+  <div class="popup" role="dialog" aria-labelledby="popupTitle">
+    <div class="popup-head">
+      <h2 id="popupTitle">Calculation Results</h2>
+      <button class="close-btn" id="closeBtn" title="Close" aria-label="Close">&#10005;</button>
+    </div>
+    <div class="popup-body">
 
-    <div id="results">
-      <div class="row drr">
-        <span class="name">DRR %</span>
-        <span class="val" id="drrOut">–</span>
+      <div class="metric" id="drrMetric">
+        <div class="metric-top">
+          <span class="metric-name">DRR Percentage <span class="threshold-badge" id="drrBadge"></span></span>
+          <span class="metric-pct" id="drrPct">–</span>
+        </div>
+        <div class="bar"><div class="bar-fill" id="drrBar"></div></div>
+        <div class="formula" id="drrFormula"></div>
       </div>
-      <div class="row sdr">
-        <span class="name">SDR %</span>
-        <span class="val" id="sdrOut">–</span>
+
+      <div class="metric" id="sdrMetric">
+        <div class="metric-top">
+          <span class="metric-name">SDR Percentage <span class="threshold-badge" id="sdrBadge"></span></span>
+          <span class="metric-pct" id="sdrPct">–</span>
+        </div>
+        <div class="bar"><div class="bar-fill" id="sdrBar"></div></div>
+        <div class="formula" id="sdrFormula"></div>
       </div>
+
+      <div class="summary" id="summary"></div>
     </div>
   </div>
+</div>
 
 <script>
+  const DRR_THRESHOLD = 45;
+  const SDR_THRESHOLD = 60;
+
+  var overlay = document.getElementById("overlay");
+
   document.getElementById("calcForm").addEventListener("submit", function (e) {
     e.preventDefault();
-    var drr   = parseFloat(document.getElementById("drrResolved").value)  || 0;
-    var sdr   = parseFloat(document.getElementById("sdrResolved").value)  || 0;
+
+    var drr   = parseFloat(document.getElementById("drrResolved").value) || 0;
+    var sdr   = parseFloat(document.getElementById("sdrResolved").value) || 0;
     var total = parseFloat(document.getElementById("totalResolved").value) || 0;
-
     var errEl = document.getElementById("error");
-    var resEl = document.getElementById("results");
 
-    if (total <= 0) {
-      errEl.style.display = "block";
-      resEl.style.display = "none";
-      return;
+    if (total <= 0) { errEl.style.display = "block"; return; }
+    errEl.style.display = "none";
+
+    var drrPct = (drr / total) * 100;
+    var sdrPct = (sdr / total) * 100;
+
+    var drrPass = drrPct >= DRR_THRESHOLD;
+    var sdrPass = sdrPct >= SDR_THRESHOLD;
+
+    /* ── Metric cards ── */
+    var drrMetric = document.getElementById("drrMetric");
+    var sdrMetric = document.getElementById("sdrMetric");
+    drrMetric.className = "metric " + (drrPass ? "pass" : "fail");
+    sdrMetric.className = "metric " + (sdrPass ? "pass" : "fail");
+
+    document.getElementById("drrBadge").textContent = drrPass ? "✔ Target Met" : "✘ Below 45%";
+    document.getElementById("sdrBadge").textContent = sdrPass ? "✔ Target Met" : "✘ Below 60%";
+
+    document.getElementById("drrPct").textContent = drrPct.toFixed(2) + "%";
+    document.getElementById("sdrPct").textContent = sdrPct.toFixed(2) + "%";
+
+    document.getElementById("drrFormula").innerHTML =
+      "DRR % = (DRR Resolved &divide; Total) &times; 100<br>" +
+      "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= (" + drr + " &divide; " + total + ") &times; 100 = <b>" + drrPct.toFixed(2) + "%</b>";
+
+    document.getElementById("sdrFormula").innerHTML =
+      "SDR % = (SDR Resolved &divide; Total) &times; 100<br>" +
+      "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= (" + sdr + " &divide; " + total + ") &times; 100 = <b>" + sdrPct.toFixed(2) + "%</b>";
+
+    /* ── Poetic Summary ── */
+    var summaryEl = document.getElementById("summary");
+    var poem = "";
+
+    if (drrPass && sdrPass) {
+      summaryEl.className = "summary all-pass";
+      poem =
+        '<span class="emoji">🏆✨</span>' +
+        'Every call answered, every case closed with care —<br>' +
+        '<strong>' + drr + ' DRR</strong> and <strong>' + sdr + ' SDR</strong> out of <strong>' + total + '</strong>, a number beyond compare.<br>' +
+        'The targets are conquered, the thresholds are crossed,<br>' +
+        'No resolution missed, no opportunity lost.<br><br>' +
+        '🎉 <strong>₹5,000 bonus unlocked — well earned, champion!</strong> 🎉';
+    } else if (!drrPass && !sdrPass) {
+      summaryEl.className = "summary all-fail";
+      poem =
+        '<span class="emoji">⚠️📉</span>' +
+        'The journey of <strong>' + total + '</strong> calls began with great intent,<br>' +
+        'yet <strong>' + drr + ' DRR</strong> and <strong>' + sdr + ' SDR</strong> weren\'t enough — the ₹5,000 unspent.<br><br>' +
+        'The finish line waits at <strong>45% DRR</strong> &amp; <strong>60% SDR</strong>,<br>' +
+        'Rise a little higher — the reward is yours to earn.';
+    } else if (drrPass && !sdrPass) {
+      summaryEl.className = "summary partial-pass";
+      poem =
+        '<span class="emoji">⚡🎯</span>' +
+        'Half the battle won — <strong>' + drr + ' DRR</strong> shines bright and true,<br>' +
+        'but <strong>' + sdr + ' SDR</strong> out of <strong>' + total + '</strong> needs a stronger breakthrough.<br><br>' +
+        'The ₹5,000 waits just past the <strong>60% SDR</strong> door —<br>' +
+        'One final push, and nothing can hold you back anymore.';
+    } else {
+      summaryEl.className = "summary partial-pass";
+      poem =
+        '<span class="emoji">⚡🎯</span>' +
+        'The SDR story shines — <strong>' + sdr + '</strong> resolutions, bold and bright,<br>' +
+        'but <strong>' + drr + ' DRR</strong> out of <strong>' + total + '</strong> isn\'t quite at full height.<br><br>' +
+        'The ₹5,000 awaits past the <strong>45% DRR</strong> line —<br>' +
+        'Close the gap, own the target, and let your numbers shine.';
     }
 
-    errEl.style.display = "none";
-    document.getElementById("drrOut").textContent = ((drr / total) * 100).toFixed(2) + "%";
-    document.getElementById("sdrOut").textContent = ((sdr / total) * 100).toFixed(2) + "%";
-    resEl.style.display = "block";
+    summaryEl.innerHTML = poem;
+
+    /* ── Show popup ── */
+    overlay.classList.add("show");
+
+    /* ── Animate bars ── */
+    var drrBar = document.getElementById("drrBar");
+    var sdrBar = document.getElementById("sdrBar");
+    drrBar.style.width = "0";
+    sdrBar.style.width = "0";
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        drrBar.style.width = Math.min(drrPct, 100) + "%";
+        sdrBar.style.width = Math.min(sdrPct, 100) + "%";
+      });
+    });
   });
+
+  document.getElementById("closeBtn").addEventListener("click", closePopup);
+  overlay.addEventListener("click", function (e) { if (e.target === overlay) closePopup(); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape") closePopup(); });
+
+  function closePopup() { overlay.classList.remove("show"); }
 </script>
 </body>
 </html>
